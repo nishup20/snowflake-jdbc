@@ -717,7 +717,10 @@ public class SnowflakeDriverIT extends BaseJDBCTest
       assertTrue("schema should be " + connection.getSchema(),
                  connection.getSchema().equalsIgnoreCase(schemaSet.getString(1)));
 
+
       // snow tables in a schema
+      /*
+      SNOW-74619: Disabled for intermittent failure
       ResultSet tableSet = metaData.getTables(
           connection.getCatalog(),
           connection.getSchema(),
@@ -728,12 +731,30 @@ public class SnowflakeDriverIT extends BaseJDBCTest
               "table %s should exists in db: %s, schema: %s",
               ORDERS_JDBC, connection.getCatalog(), connection.getSchema()),
           tableSet.next());
-      assertTrue("database should be " + connection.getCatalog(),
-                 connection.getCatalog().equalsIgnoreCase(schemaSet.getString(2)));
-      assertTrue("schema should be " + connection.getSchema(),
-                 connection.getSchema().equalsIgnoreCase(schemaSet.getString(1)));
-      assertTrue("table should be orders_jdbc",
-                 ORDERS_JDBC.equalsIgnoreCase(tableSet.getString(3)));
+      */
+      // show tables in a schemas and match the name.
+      ResultSet tableSet = metaData.getTables(
+          connection.getCatalog(),
+          connection.getSchema(),
+          "%",
+          null); // types
+      int cnt = 0;
+      while (tableSet.next())
+      {
+        if (ORDERS_JDBC.equalsIgnoreCase(tableSet.getString(3)))
+        {
+          assertTrue(
+              String.format("database expected: %s, got: %s.", connection.getCatalog(), tableSet.getString(1)),
+              connection.getCatalog().equalsIgnoreCase(tableSet.getString(1)));
+          assertTrue(
+              String.format("schema expected: %s, got: %s.", connection.getSchema(), tableSet.getString(2)),
+              connection.getSchema().equalsIgnoreCase(tableSet.getString(2)));
+          ++cnt;
+        }
+      }
+      assertEquals(
+          String.format("%s not found in %s.%s!", ORDERS_JDBC, connection.getCatalog(), connection.getSchema()),
+          1, cnt);
 
       ResultSet tableMetaDataResultSet = metaData.getTables(
           null, // catalog
@@ -746,7 +767,7 @@ public class SnowflakeDriverIT extends BaseJDBCTest
       assertEquals(10, resultSetMetaData.getColumnCount());
 
       // assert we get 1 rows
-      int cnt = 0;
+      cnt = 0;
       while (tableMetaDataResultSet.next())
       {
         assertTrue(ORDERS_JDBC.equalsIgnoreCase(
