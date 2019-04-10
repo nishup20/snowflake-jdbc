@@ -289,6 +289,9 @@ public class DatabaseMetaDataIT extends BaseJDBCTest
       final String targetTable = "T0";
       final String targetView = "V0";
 
+      connection.createStatement().execute("use database " + database);
+      connection.createStatement().execute("use schema " + schema);
+      connection.createStatement().execute("create or replace table " + targetTable + "(C1 int)");
       connection.createStatement().execute("create or replace table " + targetTable + "(C1 int)");
       connection.createStatement().execute("create or replace view " + targetView + " as select 1 as C");
 
@@ -304,7 +307,7 @@ public class DatabaseMetaDataIT extends BaseJDBCTest
       {
         tables.add(resultSet.getString(3));
       }
-      assertTrue(tables.contains("T0"));
+      assertTrue(tables.contains(targetTable));
 
       // exact match table
       resultSet = metaData.getTables(
@@ -314,7 +317,16 @@ public class DatabaseMetaDataIT extends BaseJDBCTest
       {
         tables.add(resultSet.getString(3));
       }
-      assertEquals(targetTable, tables.iterator().next());
+      assertEquals(
+          String.format(
+              "Table %s not found in %s.%s! ", targetTable, database, schema),
+          1, tables.size());
+      String foundTable = "";
+      for (String t : tables)
+      {
+        foundTable = t;
+      }
+      assertEquals(targetTable, foundTable);
 
       // match view
       resultSet = metaData.getTables(
@@ -711,7 +723,7 @@ public class DatabaseMetaDataIT extends BaseJDBCTest
       resultSet = metaData.getColumnPrivileges(database, schema, targetTable, "C1");
       assertEquals(0, super.getSizeOfResultSet(resultSet));
 
-      connection.createStatement().execute("drop table if exists T0");
+      connection.createStatement().execute("drop table if exists " + targetTable);
     }
   }
 
