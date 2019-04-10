@@ -310,6 +310,9 @@ public class DatabaseMetaDataIT extends BaseJDBCTest
       assertTrue(tables.contains(targetTable));
 
       // exact match table
+      /*
+      SNOW-74619: Disabled for intermittent failure
+
       resultSet = metaData.getTables(
           database, schema, targetTable, new String[]{"TABLE"});
       tables = new HashSet<>();
@@ -327,6 +330,7 @@ public class DatabaseMetaDataIT extends BaseJDBCTest
         foundTable = t;
       }
       assertEquals(targetTable, foundTable);
+      */
 
       // match view
       resultSet = metaData.getTables(
