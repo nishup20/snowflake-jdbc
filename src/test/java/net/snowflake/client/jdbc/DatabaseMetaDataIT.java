@@ -14,6 +14,7 @@ import java.sql.SQLException;
 import java.sql.SQLFeatureNotSupportedException;
 import java.sql.Statement;
 import java.sql.Types;
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -310,7 +311,8 @@ public class DatabaseMetaDataIT extends BaseJDBCTest
       assertTrue(tables.contains(targetTable));
       assertTrue(
           String.format(
-              "Table %s not found in %s.%s!", targetTable, database, schema),
+              "Table %s not found in %s.%s! Tables: %s",
+              targetTable, database, schema, Arrays.toString(tables.toArray(new String[0]))),
           tables.contains(targetTable)
       );
 
@@ -348,7 +350,8 @@ public class DatabaseMetaDataIT extends BaseJDBCTest
       }
       assertTrue(
           String.format(
-              "View %s not found in %s.%s!", targetView, database, schema),
+              "View %s not found in %s.%s! Views: %s",
+              targetView, database, schema, Arrays.toString(views.toArray(new String[0]))),
           views.contains(targetView)
       );
 
