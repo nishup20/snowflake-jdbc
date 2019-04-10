@@ -308,6 +308,11 @@ public class DatabaseMetaDataIT extends BaseJDBCTest
         tables.add(resultSet.getString(3));
       }
       assertTrue(tables.contains(targetTable));
+      assertTrue(
+          String.format(
+              "Table %s not found in %s.%s!", targetTable, database, schema),
+          tables.contains(targetTable)
+      );
 
       // exact match table
       /*
@@ -341,7 +346,11 @@ public class DatabaseMetaDataIT extends BaseJDBCTest
       {
         views.add(resultSet.getString(3));
       }
-      assertTrue(views.contains(targetView));
+      assertTrue(
+          String.format(
+              "View %s not found in %s.%s!", targetView, database, schema),
+          views.contains(targetView)
+      );
 
       resultSet = metaData.getTablePrivileges(
           database, schema, targetTable
